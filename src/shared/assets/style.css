@@ -170,18 +170,3 @@ body {
 	@apply xl:max-w-screen-xl;
 	@apply 2xl:max-w-screen-2xl;
 }
-
-html,
-body {
-	min-height: 100%;
-}
-
-.wrapper {
-	min-height: 100%;
-	display: flex;
-	flex-direction: column;
-}
-
-main {
-	flex: 1 1 auto;
-}
