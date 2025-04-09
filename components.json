@@ -4,7 +4,7 @@
 	"typescript": true,
 	"tailwind": {
 		"config": "",
-		"css": "./shared/assets/style.css",
+		"css": "@/shared/assets/style.css",
 		"baseColor": "slate",
 		"cssVariables": true,
 		"prefix": ""

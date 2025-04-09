@@ -7,7 +7,12 @@
 	"compilerOptions": {
 		"baseUrl": ".",
 		"paths": {
-			"@/*": ["./src/*"]
+			"@/*": ["./src/*"],
+			"@components/*": ["src/shared/components/*"],
+			"@composables/*": ["src/shared/composables/*"],
+			"@utils/*": ["src/shared/lib/utils/*"],
+			"@ui/*": ["src/shared/components/ui/*"],
+			"@lib/*": ["src/shared/lib/*"]
 		}
 	}
 }
