@@ -9,7 +9,9 @@ import AdvantItem from '../components/advantItem.vue'
 			<h2 class="text-4xl text-center font-bold">
 				Why Transform to Composition API?
 			</h2>
-			<div class="flex items-center justify-between gap-3 mt-16">
+			<div
+				class="flex items-center justify-between gap-3 mt-16 max-lg:flex-col"
+			>
 				<AdvantItem
 					:icon="CodeXml"
 					title="Better Code Organization"

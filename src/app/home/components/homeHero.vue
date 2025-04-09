@@ -4,7 +4,9 @@ import Button from '@ui/button/Button.vue'
 
 <template>
 	<section class="mt-10">
-		<div class="container flex items-center justify-between gap-5">
+		<div
+			class="container flex items-center justify-between gap-5 max-lg:flex-col max-lg:items-start"
+		>
 			<div class="max-w-[600px]">
 				<h1 class="text-6xl font-black leading-16">
 					Transform Your <span class="text-primary">Vue.js</span> Components
@@ -18,9 +20,11 @@ import Button from '@ui/button/Button.vue'
 					<Button variant="transparent"> Learn More </Button>
 				</div>
 			</div>
-			<div class="basis-[750px] flex flex-col gap-5">
+			<div
+				class="basis-[750px] flex flex-col gap-5 max-lg:flex-row max-lg:basis-auto max-lg:w-full max-lg:mt-10"
+			>
 				<div
-					class="bg-gradient-to-r to-transparent p-5 rounded-xl border"
+					class="bg-gradient-to-r to-transparent p-5 rounded-xl border w-full"
 					style="--tw-gradient-from: #032419"
 				>
 					<span class="text-primary font-medium">
@@ -42,7 +46,7 @@ import Button from '@ui/button/Button.vue'
 					</code>
 				</div>
 				<div
-					class="bg-gradient-to-r to-transparent p-5 rounded-xl border"
+					class="bg-gradient-to-r to-transparent p-5 rounded-xl border w-full"
 					style="--tw-gradient-from: #032419"
 				>
 					<span class="text-primary font-medium"
