@@ -4,6 +4,36 @@ import Button from '@ui/button/Button.vue'
 
 import { Copy } from 'lucide-vue-next'
 import Label from '@ui/label/Label.vue'
+import { ref } from 'vue'
+
+const optionCode = ref('')
+const convertedCode = ref('')
+
+const covertCode = (optionCode: string) => {
+	const lines = optionCode.split('\n').map(line => line.trim())
+
+	let data = ''
+
+	const dataVars = []
+
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i]
+		if (line.startsWith('data()')) {
+			i++
+			while (!lines[i].startsWith('}')) {
+				const match = lines[i].match(/(\w+):\s(.+),?/)
+				if (match) {
+					const [_, key, value] = match
+					dataVars.push(key)
+					data += `  const ${key} = ref(${value});\n`
+				}
+				i++
+			}
+		}
+	}
+
+	console.log(data)
+}
 </script>
 
 <template>
@@ -34,7 +64,13 @@ import Label from '@ui/label/Label.vue'
 					/>
 				</div>
 			</div>
-			<Button class="m-auto block mt-10">Convert Now</Button>
+			<Button
+				class="m-auto block mt-10"
+				@click="covertCode(convertedCode)"
+				v-model="optionCode"
+			>
+				Convert Now
+			</Button>
 		</div>
 	</section>
 </template>

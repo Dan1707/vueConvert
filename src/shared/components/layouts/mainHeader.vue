@@ -44,26 +44,39 @@ const burgerMenuToggle = () => {
 		</div>
 	</header>
 	<div
-		v-if="showBurgerMenu"
-		class="bg-background w-screen min-h-screen z-40 fixed top-0 left-[-50%] translate-x-[50%] flex flex-col items-center justify-center"
+		:class="showBurgerMenu ? 'translate-y-0' : 'translate-y-full'"
+		class="bg-background w-screen duration-300 min-h-screen z-40 fixed left-[-50%] translate-x-[50%] flex flex-col items-center justify-center"
 	>
 		<nav>
 			<ul class="flex items-center flex-col gap-10 justify-between w-full">
 				<li>
-					<RouterLink :to="{ name: 'home' }" class="text-3xl">Home</RouterLink>
+					<RouterLink
+						:to="{ name: 'home' }"
+						class="text-3xl"
+						@click="burgerMenuToggle"
+						>Home</RouterLink
+					>
 				</li>
 				<li>
-					<RouterLink :to="{ name: 'dashboard' }" class="text-3xl"
+					<RouterLink
+						:to="{ name: 'dashboard' }"
+						class="text-3xl"
+						@click="burgerMenuToggle"
 						>Dashboard</RouterLink
 					>
 				</li>
 				<li>
-					<RouterLink :to="{ name: 'pricing' }" class="text-3xl"
+					<RouterLink
+						:to="{ name: 'pricing' }"
+						class="text-3xl"
+						@click="burgerMenuToggle"
 						>Pricing</RouterLink
 					>
 				</li>
 				<li>
-					<Button class="mt-5 text-3xl p-8">Get Started</Button>
+					<Button class="mt-5 text-3xl p-8" @click="burgerMenuToggle"
+						>Get Started</Button
+					>
 				</li>
 			</ul>
 		</nav>
