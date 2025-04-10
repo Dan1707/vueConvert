@@ -9,8 +9,10 @@ import Label from '@ui/label/Label.vue'
 <template>
 	<section class="mt-30">
 		<div class="container">
-			<h2 class="text-4xl text-center font-bold">Try the Converter</h2>
-			<div class="flex justify-center mt-16 gap-3">
+			<h2 class="text-4xl text-center font-bold max-md:text-2xl">
+				Try the Converter
+			</h2>
+			<div class="flex justify-center mt-16 gap-3 max-md:flex-col">
 				<div class="basis-[450px] min-h-[300px] relative">
 					<Label class="absolute left-0 top-0 p-5 h-[76px]">Option API</Label>
 					<Textarea

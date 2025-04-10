@@ -8,7 +8,9 @@ import Button from '@ui/button/Button.vue'
 			class="container flex items-center justify-between gap-5 max-lg:flex-col max-lg:items-start"
 		>
 			<div class="max-w-[600px]">
-				<h1 class="text-6xl font-black leading-16">
+				<h1
+					class="text-6xl font-black leading-16 max-md:text-4xl max-md:leading-10"
+				>
 					Transform Your <span class="text-primary">Vue.js</span> Components
 				</h1>
 				<p class="mt-8 text-slate-500">
@@ -21,7 +23,7 @@ import Button from '@ui/button/Button.vue'
 				</div>
 			</div>
 			<div
-				class="basis-[750px] flex flex-col gap-5 max-lg:flex-row max-lg:basis-auto max-lg:w-full max-lg:mt-10"
+				class="basis-[750px] flex flex-col gap-5 max-lg:flex-row max-lg:basis-auto max-lg:w-full max-lg:mt-10 max-md:flex-col"
 			>
 				<div
 					class="bg-gradient-to-r to-transparent p-5 rounded-xl border w-full"

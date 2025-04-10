@@ -6,7 +6,7 @@ import AdvantItem from '../components/advantItem.vue'
 <template>
 	<section class="mt-30">
 		<div class="container">
-			<h2 class="text-4xl text-center font-bold">
+			<h2 class="text-4xl text-center font-bold max-md:text-2xl">
 				Why Transform to Composition API?
 			</h2>
 			<div
@@ -19,12 +19,12 @@ import AdvantItem from '../components/advantItem.vue'
 				/>
 				<AdvantItem
 					:icon="Puzzle"
-					title="Better Code Organization"
+					title="Reusable Logic"
 					text="Extract and reuse component logic with composables for better code sharing."
 				/>
 				<AdvantItem
 					:icon="Zap"
-					title="Better Code Organization"
+					title="Better TypeScript Support"
 					text="Enjoy improved type inference and better IDE support with Composition API."
 				/>
 			</div>
