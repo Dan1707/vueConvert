@@ -25,7 +25,7 @@ const burgerMenuToggle = () => {
 						>
 					</li>
 					<li>
-						<RouterLink :to="{ name: 'dashboard' }">Dashboard</RouterLink>
+						<RouterLink :to="{ name: 'converter' }">Converter</RouterLink>
 					</li>
 					<li>
 						<RouterLink :to="{ name: 'pricing' }">Pricing</RouterLink>
@@ -59,7 +59,7 @@ const burgerMenuToggle = () => {
 				</li>
 				<li>
 					<RouterLink
-						:to="{ name: 'dashboard' }"
+						:to="{ name: 'converter' }"
 						class="text-3xl"
 						@click="burgerMenuToggle"
 						>Dashboard</RouterLink
