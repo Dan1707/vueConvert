@@ -58,13 +58,86 @@ const convertData = (lines: string[]) => {
 		}
 	}
 
-	convertedCode.value = data
+	convertedCode.value += data
+}
+
+const convertFunctions = (lines: string[]) => {
+	let data = ''
+
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i]
+
+		if (line.startsWith('methods:')) {
+			i++
+			while (lines[i] !== '}') {
+				const line = lines[i]
+
+				// CONDITIONS
+				const includesBrackets =
+					line.includes('(') ||
+					line.includes(')') ||
+					line.includes('{') ||
+					line.includes('}')
+
+				const includesOthers =
+					line.includes('if(') ||
+					line.includes('switch(') ||
+					line.includes('for(') ||
+					line.includes('console.log') ||
+					line.includes('return') ||
+					line.includes('},')
+
+				let funcObj = {
+					funcName: '',
+					funcParams: '',
+					funcContent: '',
+				}
+
+				if (includesBrackets && !includesOthers) {
+					const nameMatch = line.match(/^(\w+)\s*\(([^)]*)\)/)
+					const funcName = nameMatch ? nameMatch[1] : 'unknown'
+					const funcParams = nameMatch ? nameMatch[2].trim() : ''
+
+					funcObj.funcName = funcName
+					funcObj.funcParams = funcParams
+
+					let funcLines: string[] = []
+					let braceCount = 0
+
+					i++
+
+					do {
+						const currentLine = lines[i]
+						funcLines.push(currentLine)
+
+						braceCount += (currentLine.match(/{/g) || []).length
+						braceCount -= (currentLine.match(/}/g) || []).length
+
+						i++
+					} while (i < lines.length && braceCount > 0)
+
+					funcObj.funcContent = funcLines.join('\n')
+
+					data += `\nconst ${funcObj.funcName.trim()} = (${
+						funcObj.funcParams
+					}) => {\n${funcObj.funcContent}
+}
+					`
+				}
+
+				i++
+			}
+		}
+	}
+
+	convertedCode.value += data
 }
 
 const covertCode = (optionCode: string) => {
 	const lines = optionCode.split('\n').map(line => line.trim())
 
 	convertData(lines)
+	convertFunctions(lines)
 }
 </script>
 
