@@ -230,11 +230,12 @@ const findThis = (lines: string[]) => {
 				let line = lines[i]
 
 				if (line?.includes('this.')) {
-					return (line = line.replace(
-						/this\.(\w+)/g,
-						(_, name) => `${name}.value`
-					))
+					line = line.replace(/this\.(\w+)/g, (_, name) => `${name}.value`)
+
+					console.log(line)
 				}
+
+				convertedCode.value += line
 				i++
 			}
 		}
