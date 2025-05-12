@@ -4,10 +4,16 @@ import Button from '@ui/button/Button.vue'
 
 import { Copy } from 'lucide-vue-next'
 import Label from '@ui/label/Label.vue'
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
 
 const optionCode = ref('')
 const convertedCode = ref('')
+
+const converted = reactive({
+	data: '',
+	functions: '',
+	computed: '',
+})
 
 const copyConvertedCode = () => {
 	navigator.clipboard.writeText(convertedCode.value || '')
@@ -62,7 +68,7 @@ const convertData = (lines: string[]) => {
 		}
 	}
 
-	convertedCode.value += data
+	converted.data = data
 }
 
 const convertFunctions = (lines: string[]) => {
@@ -146,7 +152,7 @@ const convertFunctions = (lines: string[]) => {
 		}
 	}
 
-	convertedCode.value += data
+	converted.functions = data
 }
 
 const convertComputed = (lines: string[]) => {
@@ -217,7 +223,7 @@ const convertComputed = (lines: string[]) => {
 		}
 	}
 
-	convertedCode.value += data
+	converted.computed = data
 }
 
 const findThis = (lines: string[]) => {
@@ -235,7 +241,6 @@ const findThis = (lines: string[]) => {
 					console.log(line)
 				}
 
-				convertedCode.value += line
 				i++
 			}
 		}
@@ -248,8 +253,18 @@ const covertCode = (optionCode: string) => {
 	convertData(lines)
 	convertFunctions(lines)
 	convertComputed(lines)
-	findThis(lines)
-	copyConvertedCode()
+
+	convertedCode.value =
+		`
+<script>
+${converted.data}
+
+${converted.functions}
+
+${converted.computed}
+	\n` +
+		'</' +
+		'script>'
 }
 </script>
 
