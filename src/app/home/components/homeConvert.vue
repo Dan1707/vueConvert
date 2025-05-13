@@ -6,6 +6,11 @@ import { Copy } from 'lucide-vue-next'
 import Label from '@ui/label/Label.vue'
 import { reactive, ref } from 'vue'
 
+const emits = defineEmits({
+	update: (val: string) => typeof val === 'string',
+	'delete-item': (id: number) => typeof id === 'number',
+})
+
 const optionCode = ref('')
 const convertedCode = ref('')
 
@@ -13,6 +18,9 @@ const converted = reactive({
 	data: '',
 	functions: '',
 	computed: '',
+	props: '',
+	emits: '',
+	imports: '',
 })
 
 const copyConvertedCode = () => {
@@ -214,8 +222,7 @@ const convertComputed = (lines: string[]) => {
 					data += `\nconst ${funcObj.funcName.trim()} = computed((${
 						funcObj.funcParams
 					}) => {\n	${funcObj.funcContent}
-})
-					`
+})`
 				}
 
 				i++
@@ -247,24 +254,145 @@ const findThis = (lines: string[]) => {
 	}
 }
 
+const convertProps = (lines: string[]) => {
+	let data = ''
+	const propsLines: string[] = []
+	let propsContent = ''
+
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i]
+
+		if (line.startsWith('props:')) {
+			i++
+			while (lines[i] !== '},') {
+				const currentLine = lines[i]
+				propsLines.push(currentLine)
+				i++
+			}
+
+			propsContent = propsLines.join('\n')
+		}
+	}
+
+	data = `
+const props = defineProps({
+${propsContent}
+})`
+
+	if (propsContent.length !== 0) {
+		converted.props = data
+	}
+}
+
+const convertEmits = (lines: string[]) => {
+	let data = ''
+	let emitContent = ''
+	const emitLines: string[] = []
+
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i].trim()
+
+		// Check for emits line
+		if (line.startsWith('emits:')) {
+			const isArray = line.includes('[')
+			const isObject = line.includes('{')
+
+			// Inline array style: emits: ['submit', 'cancel'],
+			if ((isArray && line.endsWith('],')) || line.endsWith(']')) {
+				emitContent = line.replace('emits:', '').replace(',', '').trim()
+
+				data = `const emit = defineEmits(${emitContent})`
+				break
+			}
+
+			// Inline object style: emits: { submit: (v) => true },
+			if ((isObject && line.endsWith('},')) || line.endsWith('}')) {
+				emitContent = line.replace('emits:', '').replace(',', '').trim()
+
+				data = `const emit = defineEmits(${emitContent})`
+				break
+			}
+
+			// Multiline object or array
+			i++
+			let braceDepth = 1
+			const openingChar = isArray ? '[' : '{'
+			const closingChar = isArray ? ']' : '}'
+
+			while (i < lines.length && braceDepth > 0) {
+				const currentLine = lines[i]
+				emitLines.push(currentLine)
+
+				// Count braces to detect the end
+				braceDepth += (
+					currentLine.match(new RegExp(`\\${openingChar}`, 'g')) || []
+				).length
+				braceDepth -= (
+					currentLine.match(new RegExp(`\\${closingChar}`, 'g')) || []
+				).length
+
+				i++
+			}
+
+			emitContent = emitLines.join('\n')
+			data = `const emit = defineEmits(${openingChar}\n${emitContent}\n${closingChar})`
+			break
+		}
+	}
+
+	if (emitContent.length !== 0) {
+		converted.emits = data
+	}
+}
+
+const convertImports = (lines: string[]) => {
+	const importLines: string[] = []
+
+	for (let i = 0; i < lines.length; i++) {
+		let line = lines[i].trim()
+		const isImport = line.includes('import') && line.includes('from')
+		const isLongImport = line.includes('import') && line.endsWith('{')
+
+		if (isLongImport) {
+			let importBlock = line
+			i++
+
+			while (i < lines.length && !lines[i].includes('from')) {
+				importBlock += '\n' + lines[i]
+				i++
+			}
+
+			if (i < lines.length) {
+				importBlock += '\n' + lines[i]
+			}
+
+			importLines.push(importBlock)
+		} else if (isImport) {
+			importLines.push(lines[i])
+		}
+	}
+
+	converted.imports = importLines.join('\n')
+}
+
 const covertCode = (optionCode: string) => {
 	const lines = optionCode.split('\n').map(line => line.trim())
 
 	convertData(lines)
 	convertFunctions(lines)
 	convertComputed(lines)
+	convertProps(lines)
+	convertEmits(lines)
+	convertImports(lines)
 
 	convertedCode.value =
-		`
-<script>
+		`<script>
+${converted.imports}
+${converted.props}
+${converted.emits}
 ${converted.data}
-
 ${converted.functions}
-
-${converted.computed}
-	\n` +
-		'</' +
-		'script>'
+${converted.computed}` + `${'</' + 'script>'}`
 }
 </script>
 
