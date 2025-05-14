@@ -6,11 +6,6 @@ import { Copy } from 'lucide-vue-next'
 import Label from '@ui/label/Label.vue'
 import { reactive, ref } from 'vue'
 
-const emits = defineEmits({
-	update: (val: string) => typeof val === 'string',
-	'delete-item': (id: number) => typeof id === 'number',
-})
-
 const optionCode = ref('')
 const convertedCode = ref('')
 
@@ -21,6 +16,7 @@ const converted = reactive({
 	props: '',
 	emits: '',
 	imports: '',
+	hooks: '',
 })
 
 const copyConvertedCode = () => {
@@ -233,26 +229,26 @@ const convertComputed = (lines: string[]) => {
 	converted.computed = data
 }
 
-const findThis = (lines: string[]) => {
-	for (let i = 0; i < lines.length; i++) {
-		const line = lines[i]
+// const findThis = (lines: string[]) => {
+// 	for (let i = 0; i < lines.length; i++) {
+// 		const line = lines[i]
 
-		if (line.startsWith('<script>')) {
-			i++
-			while (lines[i] !== '<' + '/script>') {
-				let line = lines[i]
+// 		if (line.startsWith('<script>')) {
+// 			i++
+// 			while (lines[i] !== '<' + '/script>') {
+// 				let line = lines[i]
 
-				if (line?.includes('this.')) {
-					line = line.replace(/this\.(\w+)/g, (_, name) => `${name}.value`)
+// 				if (line?.includes('this.')) {
+// 					line = line.replace(/this\.(\w+)/g, (_, name) => `${name}.value`)
 
-					console.log(line)
-				}
+// 					console.log(line)
+// 				}
 
-				i++
-			}
-		}
-	}
-}
+// 				i++
+// 			}
+// 		}
+// 	}
+// }
 
 const convertProps = (lines: string[]) => {
 	let data = ''
@@ -375,6 +371,63 @@ const convertImports = (lines: string[]) => {
 	converted.imports = importLines.join('\n')
 }
 
+const convertHooks = (lines: string[]) => {
+	interface hookObj {
+		option: string
+		composition: string | null
+	}
+
+	const hooksArr: hookObj[] = [
+		{ option: 'beforeCreate', composition: null },
+		{ option: 'created', composition: null },
+		{ option: 'beforeMount', composition: 'onBeforeMount' },
+		{ option: 'mounted', composition: 'onMounted' },
+		{ option: 'beforeUpdate', composition: 'onBeforeUpdate' },
+		{ option: 'updated', composition: 'onUpdated' },
+		{ option: 'beforeUnmount', composition: 'onBeforeUnmount' },
+		{ option: 'unmounted', composition: 'onUnmounted' },
+		{ option: 'activated', composition: 'onActivated' },
+		{ option: 'deactivated', composition: 'onDeactivated' },
+		{ option: 'errorCaptured', composition: 'onErrorCaptured' },
+		{ option: 'renderTracked', composition: 'onRenderTracked' },
+		{ option: 'renderTriggered', composition: 'onRenderTriggered' },
+		{ option: 'serverPrefetch', composition: 'onServerPrefetch' },
+	]
+
+	for (let i = 0; i < lines.length; i++) {
+		let line = lines[i].trim()
+		if (!line) continue
+
+		for (const hook of hooksArr) {
+			if (line.startsWith(hook.option)) {
+				const compositionVer = hook.composition
+
+				const paramStart = line.indexOf('(')
+				const paramEnd = line.indexOf(')')
+				const hookParams = line.slice(paramStart, paramEnd)
+
+				if (!compositionVer) break
+
+				const hookContent: string[] = []
+				i++
+
+				while (i < lines.length && !lines[i].trim().startsWith('}')) {
+					hookContent.push(lines[i].trim())
+					i++
+				}
+
+				converted.hooks += `
+${compositionVer}((${hookParams}) => {
+	${hookContent.join('\n\t')}
+})
+`
+
+				break
+			}
+		}
+	}
+}
+
 const covertCode = (optionCode: string) => {
 	const lines = optionCode.split('\n').map(line => line.trim())
 
@@ -384,6 +437,7 @@ const covertCode = (optionCode: string) => {
 	convertProps(lines)
 	convertEmits(lines)
 	convertImports(lines)
+	convertHooks(lines)
 
 	convertedCode.value =
 		`<script>
@@ -392,7 +446,9 @@ ${converted.props}
 ${converted.emits}
 ${converted.data}
 ${converted.functions}
-${converted.computed}` + `${'</' + 'script>'}`
+${converted.computed}
+${converted.hooks}
+` + `${'</' + 'script>'}`
 }
 </script>
 
