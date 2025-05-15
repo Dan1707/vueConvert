@@ -83,7 +83,7 @@ const convertFunctions = (lines: string[]) => {
 
 		if (line.startsWith('methods:')) {
 			i++
-			while (lines[i] !== '}') {
+			while (i < lines.length && lines[i] !== '}') {
 				const line = lines[i]
 				// CONDITIONS
 				const includesBrackets =
@@ -117,46 +117,55 @@ const convertFunctions = (lines: string[]) => {
 					if (nameMatch) {
 						funcObj.funcName = nameMatch[2] || 'unknown'
 						funcObj.funcParams = nameMatch[3]?.trim() || ''
+					} else {
+						i++
+						continue
 					}
 
-					let funcLines: string[] = []
-					let braceCount = 0
+					let funcLines = []
+					let braceCount = 1
 
 					i++
 
-					do {
+					while (i < lines.length && braceCount > 0) {
 						const currentLine = lines[i]
 						funcLines.push(currentLine)
 
-						braceCount += (currentLine.match(/{/g) || []).length
-						braceCount -= (currentLine.match(/}/g) || []).length
+						const openBraces = (currentLine.match(/{/g) || []).length
+						const closeBraces = (currentLine.match(/}/g) || []).length
+						braceCount += openBraces - closeBraces
 
 						i++
-					} while (i < lines.length && braceCount > 0)
+
+						if (braceCount === 0) {
+							funcLines.pop()
+							break
+						}
+					}
 
 					funcObj.funcContent = funcLines.join('\n')
 
 					if (isAsync) {
 						data += `\nconst ${funcObj.funcName.trim()} = async(${
 							funcObj.funcParams
-						}) => {\n${funcObj.funcContent}
-}
-					`
+						}) => {
+${funcObj.funcContent}
+};\n`
 					} else {
 						data += `\nconst ${funcObj.funcName.trim()} = (${
 							funcObj.funcParams
-						}) => {\n${funcObj.funcContent}
-}
-					`
+						}) => {
+${funcObj.funcContent}
+};\n`
 					}
+				} else {
+					i++
 				}
-
-				i++
 			}
 		}
 	}
 
-	converted.functions = data
+	return (converted.functions = data)
 }
 
 const convertComputed = (lines: string[]) => {
